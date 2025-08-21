@@ -34,16 +34,17 @@ def authorization(token: HTTPAuthorizationCredentials = Depends(SECURITY)):
                 "require": ["exp", "iat", "sub", "roles"]
             }
         ))
-
-        if "PRINT_LABEL" not in decode_data.roles and "ADMIN" not in decode_data.roles:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Insufficient permissions to print labels."
-            )
     except:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
+
             detail="Invalid or expired token."
+        )
+
+    if "PRINT_LABEL" not in decode_data.roles and "ADMIN" not in decode_data.roles:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Insufficient permissions to print labels."
         )
 
 
