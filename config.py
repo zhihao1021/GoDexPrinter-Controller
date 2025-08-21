@@ -22,7 +22,7 @@ class DataBaseConfig(BaseModel):
 class Config(BaseModel):
     host: str = "0.0.0.0"
     port: int = 8080
-    jwt_key: str = ""
+    jwt_public_key: str = ""
     dll_path: Optional[str] = None
     db_config: DataBaseConfig = DataBaseConfig()
 
@@ -36,9 +36,16 @@ except:
 with open("config.json", "wb") as config_file:
     config_file.write(dumps(config.model_dump(), option=OPT_INDENT_2))
 
+jwt_key = ""
+if config.jwt_public_key.startswith("-----BEGIN PUBLIC KEY-----"):
+    jwt_key = config.jwt_public_key
+else:
+    with open(config.jwt_public_key, "r") as pem_file:
+        jwt_key = pem_file.read()
+
 HOST = config.host
 PORT = config.port
-JWT_KEY = config.jwt_key
+JWT_KEY = jwt_key
 DLL_PATH = config.dll_path
 DB_NAME = config.db_config.database
 DB_HOST = config.db_config.host
