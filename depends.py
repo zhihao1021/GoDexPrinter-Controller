@@ -29,7 +29,7 @@ def authorization(token: HTTPAuthorizationCredentials = Depends(SECURITY)):
         decode_data = JwtPayload(**decode(
             jwt=jwt,
             key=JWT_KEY,
-            algorithms=["HS256"],
+            algorithms=["HS256", "HS384", "HS512"],
             options={
                 "require": ["exp", "iat", "sub", "roles"]
             }
