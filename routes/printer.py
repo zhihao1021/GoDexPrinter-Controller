@@ -43,7 +43,7 @@ def resume_printer(printer: PrinterDepends) -> None:
 
 @router.get("/cancel")
 def cancel_printer(printer: PrinterDepends) -> None:
-    printer.cancel()
+    printer.send_command("~S,PAUSE")
 
 
 @router.get("/forward/{distance}")
@@ -59,6 +59,7 @@ def backward_printer(distance: int, printer: PrinterDepends) -> None:
 @router.get("/buzzer")
 def enable_buzzer(printer: PrinterDepends) -> None:
     printer.set_buzzer(True)
+
 
 @router.delete("/buzzer")
 def disable_buzzer(printer: PrinterDepends) -> None:
