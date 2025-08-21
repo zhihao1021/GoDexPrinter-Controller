@@ -4,6 +4,7 @@ from os.path import abspath
 from platform import system
 from queue import Queue
 from threading import Lock
+from time import time
 from typing import Any, Iterable, Literal, overload, Optional, Union
 
 from config import DLL_PATH
@@ -71,6 +72,8 @@ PrinterStateLiteral = Literal[
 class PrinterSession:
     __dll: CDLL
     __lock: Lock
+    __last_cache: float = 0
+    __last_cache_result: tuple[PrinterState, int] = (PrinterState.UNKNOWN, 0)
 
     def __init__(self, dll: CDLL, lock: Lock) -> None:
         self.__dll = dll
@@ -129,10 +132,19 @@ class PrinterSession:
             buffer = None
 
     def get_state(self) -> tuple[PrinterState, int]:
+        cls = self.__class__
+        if time() - cls.__last_cache < 1:
+            if cls.__last_cache_result is not None:
+                return cls.__last_cache_result
+
         self.send_command("~S,STATUS")
         response = self.receive_buffer()
         state, count = response.decode("utf-8").split(",", 2)
-        return PrinterState.from_code(state), int(count.strip())
+
+        result = PrinterState.from_code(state), int(count.strip())
+        cls.__last_cache_result = result
+        cls.__last_cache = time()
+        return result
 
     def pause(self) -> None:
         if self.get_state() == PrinterState.PRINTING:
