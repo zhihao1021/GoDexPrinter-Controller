@@ -80,11 +80,14 @@ class PrinterSession:
         self.__lock = lock
 
     def __enter__(self) -> "PrinterSession":
+        self.__lock.acquire()
         if system() == "Windows":
             if (self.__dll.openport(b"6") != 1):
+                self.__lock.release()
                 raise Exception("Failed to open printer")
         else:
             if (self.__dll.openUSB() != 1):
+                self.__lock.release()
                 raise Exception("Failed to open printer")
         return self
 
@@ -93,6 +96,7 @@ class PrinterSession:
             self.__dll.closeport()
         else:
             self.__dll.closeUSB()
+        self.__lock.release()
 
     def send_command(self, command: Union[str, bytes, Iterable[str], Iterable[bytes]]) -> None:
         if isinstance(command, str):
@@ -128,12 +132,9 @@ class PrinterSession:
             buffer = None
 
     def get_state(self) -> tuple[PrinterState, int]:
-        self.__lock.acquire()
-
         cls = self.__class__
         if time() - cls.__last_cache < 1:
             if cls.__last_cache_result is not None:
-                self.__lock.release()
                 return cls.__last_cache_result
 
         self.send_command("~S,STATUS")
@@ -143,8 +144,6 @@ class PrinterSession:
         result = PrinterState.from_code(state), int(count.strip())
         cls.__last_cache_result = result
         cls.__last_cache = time()
-
-        self.__lock.release()
         return result
 
     def pause(self) -> None:
