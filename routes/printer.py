@@ -26,6 +26,10 @@ def get_printer_state() -> StateResponse:
         return StateResponse(state=PrinterState.UNKNOWN.name, queue=0)
 
 
+@router.get("/raw-pause")
+def raw_pause_printer(printer: PrinterDepends) -> None:
+    printer.send_command("~S,PAUSE")
+
 @router.get("/pause")
 def pause_printer(printer: PrinterDepends) -> None:
     printer.pause()
