@@ -5,7 +5,7 @@ from typing import Annotated
 
 from depends import auth_depends
 from record import Record
-from printer import GoDexPrinter
+from printer import GoDexPrinter, PrinterState
 
 router = APIRouter(
     prefix="/task",
@@ -19,6 +19,13 @@ def get_task(record_id: int, c: Annotated[int, Query(ge=1)]) -> None:
     try:
         record = Record.find_by_id(record_id)
         with GoDexPrinter.open() as printer:
+            state, _ = printer.get_state()
+            if state != PrinterState.IDLE:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Printer is busy"
+                )
+
             printer.send_command([
                 "^XSETCUT,DOUBLECUT,0",
                 "^Q20,3",
