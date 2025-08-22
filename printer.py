@@ -109,8 +109,9 @@ class PrinterSession:
                     element = element.encode("utf-8")
                 elif not isinstance(element, bytes):
                     raise TypeError("Command elements must be str or bytes")
-                if (self.__dll.sendcommand(command) != 1):
-                    raise Exception(f"Failed to send command: {command}")
+                
+                if (self.__dll.sendcommand(element) != 1):
+                    raise Exception(f"Failed to send command: {element}")
             return
         if (rv != 1):
             raise Exception(f"Failed to send command: {command}")
