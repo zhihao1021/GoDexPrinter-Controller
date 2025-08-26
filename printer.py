@@ -100,13 +100,13 @@ class PrinterSession:
 
     def send_command(self, command: Union[str, bytes, Iterable[str], Iterable[bytes]]) -> None:
         if isinstance(command, str):
-            rv = self.__dll.sendcommand(command.encode("utf-8"))
+            rv = self.__dll.sendcommand(command.encode("cp950"))
         elif isinstance(command, bytes):
             rv = self.__dll.sendcommand(command)
         else:
             for element in command:
                 if isinstance(element, str):
-                    element = element.encode("utf-8")
+                    element = element.encode("cp950")
                 elif not isinstance(element, bytes):
                     raise TypeError("Command elements must be str or bytes")
                 
