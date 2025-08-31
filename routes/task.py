@@ -12,6 +12,16 @@ router = APIRouter(
     dependencies=[auth_depends]
 )
 
+@router.get("/dryrun/{record_id}")
+def dry_run(record_id: int) -> Record:
+    try:
+        record = Record.find_by_id(record_id)
+        return record
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Record with ID {record_id} not found."
+        )
 
 @router.put("/add/{record_id}")
 def get_task(record_id: int, c: Annotated[int, Query(ge=1)]) -> None:
