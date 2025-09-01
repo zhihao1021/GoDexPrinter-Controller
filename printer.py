@@ -112,9 +112,7 @@ class PrinterSession:
                     element = element.encode("cp950")
                 elif not isinstance(element, bytes):
                     raise TypeError("Command elements must be str or bytes")
-                
-                if len(element) == 0:
-                    return
+
                 if (self.__dll.sendcommand(element) != 1):
                     raise Exception(f"Failed to send command: {element}")
             return
