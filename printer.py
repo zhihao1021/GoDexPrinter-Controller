@@ -105,6 +105,9 @@ class PrinterSession:
             rv = self.__dll.sendcommand(command)
         else:
             for element in command:
+                if not command:
+                    continue
+
                 if isinstance(element, str):
                     element = element.encode("cp950")
                 elif not isinstance(element, bytes):
