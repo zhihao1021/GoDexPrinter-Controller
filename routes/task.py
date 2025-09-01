@@ -24,7 +24,7 @@ def generate_command(
         else "子瓶" if record.operation_type == "CHILD" \
         else "二次瓶"
 
-    return [
+    result = [
         "^XSETCUT,DOUBLECUT,0",
         "^Q20,3",
         "^W50",
@@ -43,12 +43,19 @@ def generate_command(
         f"AD,144,12,1,1,0,0E,{record.name}",
         f"AB,144,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}",
         f"AZ1,144,72,1,1,0,0,{record.operator_name}{f' ({record.operator_code})' if record.operator_code else ''}",
-        f"AZ1,144,96,1,1,0,0,{operation_type}",
-        f"AZ1,144,120,1,1,0,0,{remark}" if remark else "",
+        f"AZ1,144,96,1,1,0,0,{operation_type}"
+    ]
+
+    if remark:
+        result.append(f"AZ1,144,120,1,1,0,0,{remark}")
+
+    result += [
         "W8,16,1,2,M0,8,6,17,0",
         f"{record.id}",
         "E",
     ]
+
+    return result
 
 
 @router.get("/dryrun/{record_id}")
