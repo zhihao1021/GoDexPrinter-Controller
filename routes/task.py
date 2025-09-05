@@ -42,9 +42,13 @@ def generate_command(
         "^L",
         f"AD,144,12,1,1,0,0E,{record.name}",
         f"AB,144,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}",
-        f"AZ1,144,72,1,1,0,0,{record.operator_name}{f' ({record.operator_code})' if record.operator_code else ''}",
+        # f"AZ1,144,72,1,1,0,0,{record.operator_name}{f' ({record.operator_code})' if record.operator_code else ''}",
+        f"AZ1,144,72,1,1,0,0,{record.operator_name}",
         f"AZ1,144,96,1,1,0,0,{operation_type}"
     ]
+
+    if record.operator_code:
+        result.append(f"AD,232,68,1,1,0,0E,{record.operator_code}")
 
     if remark:
         result.append(f"AZ1,144,120,1,1,0,0,{remark}")
