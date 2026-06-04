@@ -21,16 +21,16 @@ FONT_18 = ImageFont.truetype("./arial.ttf", 18)
 
 def get_font_width_param(text: str) -> str:
     width_18 = int(FONT_18.getbbox(text)[2])
-    if width_18 < 64:
+    if width_18 <= 64:
         return "AF,140,0,1,1"
     width_16 = int(FONT_16.getbbox(text)[2])
-    if width_16 < 64:
+    if width_16 <= 64:
         return "AB,140,4,2,2"
     width_14 = int(FONT_14.getbbox(text)[2])
-    if width_14 < 64:
+    if width_14 <= 64:
         return "AE,140,8,1,1"
     width_12 = int(FONT_12.getbbox(text)[2])
-    if width_12 < 64:
+    if width_12 <= 64:
         return "AD,140,12,1,1"
     return "AC,140,12,1,1"
 
