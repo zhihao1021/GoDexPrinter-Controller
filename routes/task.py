@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query, status
+from PIL import ImageFont
 
 from time import sleep
 from typing import Annotated, Optional
@@ -13,6 +14,25 @@ router = APIRouter(
     dependencies=[auth_depends]
 )
 
+FONT_12 = ImageFont.truetype("./arial.ttf", 12)
+FONT_14 = ImageFont.truetype("./arial.ttf", 14)
+FONT_16 = ImageFont.truetype("./arial.ttf", 16)
+FONT_18 = ImageFont.truetype("./arial.ttf", 18)
+
+def get_font_width_param(text: str) -> str:
+    width_18 = int(FONT_18.getbbox(text)[2])
+    if width_18 < 64:
+        return "AF,140,0,1,1"
+    width_16 = int(FONT_16.getbbox(text)[2])
+    if width_16 < 64:
+        return "AB,140,4,2,2"
+    width_14 = int(FONT_14.getbbox(text)[2])
+    if width_14 < 64:
+        return "AE,140,8,1,1"
+    width_12 = int(FONT_12.getbbox(text)[2])
+    if width_12 < 64:
+        return "AD,140,12,1,1"
+    return "AC,140,12,1,1"
 
 def generate_command(
     count: int,
@@ -23,6 +43,8 @@ def generate_command(
         else "中間橋" if record.operation_type == "MID" \
         else "子瓶" if record.operation_type == "CHILD" \
         else "二次瓶"
+    
+    record_param = get_font_width_param(record.name)
 
     result = [
         "^XSETCUT,DOUBLECUT,0",
@@ -40,14 +62,14 @@ def generate_command(
         "^E18",
         "~R255",
         "^L",
-        f"AD,144,12,1,1,0,0E,{record.name}",
+        f"{record_param},0,0E,{record.name}",
         # f"AB,144,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}",
-        f"AD,144,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}", # Bigger version
+        f"AD,140,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}", # Bigger version
         # f"AZ1,144,72,1,1,0,0,{record.operator_name}{f' ({record.operator_code})' if record.operator_code else ''}",
         # f"AZ1,144,72,1,1,0,0,{record.operator_name}",
-        f"AZ1,144,82,1,1,0,0,{record.operator_name}", # Bigger version
+        f"AZ1,140,82,1,1,0,0,{record.operator_name}", # Bigger version
         # f"AZ1,144,96,1,1,0,0,{operation_type}",
-        f"AZ1,144,114,1,1,0,0,{operation_type}", # Bigger version
+        f"AZ1,140,114,1,1,0,0,{operation_type}", # Bigger version
     ]
 
     if record.operator_code:
