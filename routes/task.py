@@ -41,14 +41,18 @@ def generate_command(
         "~R255",
         "^L",
         f"AD,144,12,1,1,0,0E,{record.name}",
-        f"AB,144,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}",
+        # f"AB,144,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}",
+        f"AD,144,46,1,1,0,0E,{record.year}-{str(record.month).zfill(2)}-{str(record.day).zfill(2)}", # Bigger version
         # f"AZ1,144,72,1,1,0,0,{record.operator_name}{f' ({record.operator_code})' if record.operator_code else ''}",
-        f"AZ1,144,72,1,1,0,0,{record.operator_name}",
-        f"AZ1,144,96,1,1,0,0,{operation_type}"
+        # f"AZ1,144,72,1,1,0,0,{record.operator_name}",
+        f"AZ1,144,82,1,1,0,0,{record.operator_name}", # Bigger version
+        # f"AZ1,144,96,1,1,0,0,{operation_type}",
+        f"AZ1,144,114,1,1,0,0,{operation_type}", # Bigger version
     ]
 
     if record.operator_code:
-        result.append(f"AD,232,68,1,1,0,0E,{record.operator_code}")
+        # result.append(f"AD,232,68,1,1,0,0E,{record.operator_code}")
+        result.append(f"AG,245,76,1,1,0,0E,{record.operator_code}") # Bigger version
 
     if remark:
         result.append(f"AZ1,144,120,1,1,0,0,{remark}")
